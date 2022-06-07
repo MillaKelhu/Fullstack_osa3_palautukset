@@ -63,6 +63,16 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
+    if (!body.name || !body.number) {
+        return response.status(400).json({
+            error: 'name or number is missing'
+        })
+    } else if (nameIsNotUnique(body.name)) {
+        return response.status(400).json({
+            error: 'name must be unique'
+        })
+    }
+
     const person = {
         id: createId(),
         name: body.name,
@@ -75,6 +85,10 @@ app.post('/api/persons', (request, response) => {
 
 const createId = () => {
     return Math.floor(Math.random() * Number.MAX_VALUE)
+}
+
+const nameIsNotUnique = ( name ) => {
+    return persons.some(person => person.name === name)
 }
 
 const PORT = 3001
