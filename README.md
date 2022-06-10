@@ -1,1 +1,1 @@
-Tästä hakemistosta löytyvät tehtävät 3.1-3.6
+Tästä hakemistosta löytyvät tehtävät 3.1-3.9
