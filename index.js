@@ -31,12 +31,15 @@ app.get('/api/persons', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-    const personsNum = persons.length
-    const date = new Date()
+    Person.count({})
+        .then(num => {
+            const date = new Date()
 
-    response.send(
-        `<p>Phonebook has info on ${personsNum} people</p>
-        <p>${date}</p>`)
+            response.send(
+                `<p>Phonebook has info on ${num} people</p>
+                <p>${date}</p>`)
+        })
+
 })
 
 app.get('/api/persons/:id', (request, response, next) => {
