@@ -82,7 +82,7 @@ app.delete('/api/persons/:id', (request, response) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    if (!body.name || !body.number) {
+    if (body.name === undefined || body.number === undefined) {
         return response.status(400).json({
             error: 'name or number is missing'
         })
@@ -92,19 +92,15 @@ app.post('/api/persons', (request, response) => {
         })
     }
 
-    const person = {
-        id: createId(),
+    const person = new Person ({
         name: body.name,
         number: body.number
-    }
+    })
 
-    persons = persons.concat(person)
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson)
+    })
 })
-
-const createId = () => {
-    return Math.floor(Math.random() * Number.MAX_VALUE)
-}
 
 const nameIsNotUnique = ( name ) => {
     return persons.some(person => person.name === name)
