@@ -20,29 +20,6 @@ morgan.token('body', function (request, response) {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-let persons = [
-    {
-        id: 1,
-        name: "Arto Hellas",
-        number: "040-123456"
-    },
-    {
-        id: 2,
-        name: "Ada Lovelace",
-        number: "39-44-5323423"
-    },
-    {
-        id: 3,
-        name: "Dan Abramov",
-        number: "12-34-234345"
-    },
-    {
-        id: 4,
-        name: "Mary Poppendick",
-        number: "39-23-6423122"
-    }
-]
-
 app.get('/', (request, response) => {
     response.send('<h1>Welcome to the phonebook!</h1>')
 })
@@ -85,13 +62,9 @@ app.delete('/api/persons/:id', (request, response, next) => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
 
-    if (body.name === undefined || body.number === undefined) {
+    if (!body.name || !body.number) {
         return response.status(400).json({
             error: 'name or number is missing'
-        })
-    } else if (nameIsNotUnique(body.name)) {
-        return response.status(400).json({
-            error: 'name must be unique'
         })
     }
 
@@ -105,9 +78,20 @@ app.post('/api/persons', (request, response) => {
     })
 })
 
-const nameIsNotUnique = ( name ) => {
-    return persons.some(person => person.name === name)
-}
+app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+
+    Person.findByIdAndUpdate(request.params.id, person, { new: true })
+        .then(updatedPerson => {
+            response.json(updatedPerson)
+        })
+        .catch(error => next(error))
+})
 
 const errorHandler = (error, request, response, next) => {
     console.error(error.message)
